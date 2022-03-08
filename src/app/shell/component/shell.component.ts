@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ShellService } from '../service/shell.service';
 
 @Component({
   selector: 'app-shell',
@@ -7,9 +8,14 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ShellComponent implements OnInit {
 
-  constructor() { }
+  constructor(
+    private readonly _shellService: ShellService
+  ) { }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    this._shellService.getAllTables();
+    this._shellService.getStructureTable(1);
+
   }
 
 }

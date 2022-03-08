@@ -8,6 +8,8 @@ import localDate from '@angular/common/locales/es-CO';
 import { AppComponent } from './app.component';
 import { ShellModule } from './shell/shell.module';
 import { CoreModule } from './core/core.module';
+import { AppRoutingModule } from './app-routing.module';
+import { HomeModule } from './feactures';
 
 //Location
 registerLocaleData(localDate, 'es-CO');
@@ -18,9 +20,11 @@ registerLocaleData(localDate, 'es-CO');
   ],
   imports: [
     BrowserModule,
+    AppRoutingModule,
     HttpClientModule,
     ReactiveFormsModule,
     FormsModule,
+    HomeModule,
     CoreModule,
     ShellModule,
   ],
