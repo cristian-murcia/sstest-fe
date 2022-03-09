@@ -1,4 +1,5 @@
 import { IResponse } from "src/app/core/models/response"
+import { ITable } from "./table"
 
 export interface IEsquemaTable {
   id: number,
@@ -8,6 +9,10 @@ export interface IEsquemaTable {
   required: number
 }
 
+export interface IStructure extends ITable {
+  columns: Array<IEsquemaTable>
+}
+
 export interface IEsquemaTableResponse extends IResponse {
-  result: Array<IEsquemaTable>
+  result: IStructure
 }

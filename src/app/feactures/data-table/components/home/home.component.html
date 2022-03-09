@@ -1,1 +1,12 @@
-<p>home works!</p>
+<ng-container *ngIf="!showError">
+  <p>Todo correcto precioso</p>
+</ng-container>
+
+<ng-container *ngIf="showError">
+  <div class="w-100 h-auto d-flex column justify-content-center align-content-center">
+    <img src="assets/img/not_found.svg" style="height: 280px;" />
+  </div>
+  <p class="text-center pt-3">No se han encontrado datos de dicha tabla con id {{idTable}},
+    <a (click)="getStructureTable()" class="text-primary" style="cursor: pointer;">Intentar de nuevo</a>
+  </p>
+</ng-container>

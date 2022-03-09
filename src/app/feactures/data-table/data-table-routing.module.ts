@@ -1,8 +1,18 @@
 import { NgModule } from '@angular/core';
-import { HomeComponent } from './components';
 import { Routes, RouterModule } from '@angular/router';
 
-const routes: Routes = [{ path: '', component: HomeComponent }];
+import { HomeComponent } from './components';
+
+const routes: Routes = [
+  {
+    path: '', redirectTo: 'list/1'
+  },
+  {
+    path: 'list/:idTable',
+    component: HomeComponent,
+    pathMatch: 'full',
+  }
+];
 
 @NgModule({
   declarations: [],

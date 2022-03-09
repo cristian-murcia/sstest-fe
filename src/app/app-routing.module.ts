@@ -13,7 +13,6 @@ const routes: Routes = [
   //Shell
   ShellRouteService.childRoutes([
     { path: '', redirectTo: '/table', pathMatch: 'full' },
-
     {
       path: 'table',
       loadChildren: () =>
