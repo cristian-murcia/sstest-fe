@@ -5,26 +5,27 @@
       <h3>Configuración</h3>
     </div>
 
-    <p>Drowdown aqui</p>
-    <div style="height: 35px;">
-      <kendo-dropdownlist [data]="listTable"> </kendo-dropdownlist>
+    <p class="my-2 font-weight-bolder" style="color: black;">Tabla: </p>
+    <div style="height: 40px;">
+      <kendo-dropdownlist [data]="listTable" textField="name" valueField="id" [defaultItem]="defaultTable"
+        (selectionChange)="selectTable($event)" class="w-100"> </kendo-dropdownlist>
     </div>
 
   </nav>
 
   <!-- Content  -->
   <div id="content">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light mb-2">
       <div class="container-fluid">
         <button type="button" id="sidebarCollapse" class="btn btn-info" (click)="openSidebar = !openSidebar">
           <i class="fas fa-align-left"></i>
-          <span>Open sidebar</span>
+          <span>{{openSidebar ? 'Cerrar' : 'Abrir'}} sidebar</span>
         </button>
       </div>
     </nav>
 
     <!--Routing-->
-    <div class="w-100 h-100">
+    <div class="w-100 h-auto">
       <router-outlet></router-outlet>
     </div>
   </div>

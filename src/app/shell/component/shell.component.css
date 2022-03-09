@@ -166,11 +166,6 @@ a.article:hover {
     }
 }
 
-
-kendo-dropdownlist {
-  width: 170px;
-}
-
 .wrap {
   display: flex;
   align-items: center;

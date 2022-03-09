@@ -25,7 +25,9 @@
             "aot": true,
             "allowedCommonJsDependencies": [
               "rxjs/internal/Observable",
-              "rxjs/internal/observable/forkJoin"
+              "rxjs/internal/observable/forkJoin",
+              "@progress/kendo-angular-intl/locales/bg/all",
+              "@progress/kendo-angular-intl/locales/de/calendar"
             ],
             "assets": [
               "src/favicon.ico",

@@ -5,9 +5,6 @@ import { HomeComponent } from './components';
 
 const routes: Routes = [
   {
-    path: '', redirectTo: 'list/1'
-  },
-  {
     path: 'list/:idTable',
     component: HomeComponent,
     pathMatch: 'full',
