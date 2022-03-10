@@ -1,4 +1,4 @@
-import { Component, DoCheck, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { ActivatedRoute, Params } from '@angular/router';
 import { Align } from '@progress/kendo-angular-popup';
@@ -16,7 +16,7 @@ import { DataTableService } from '../../services/data-table.service';
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
-export class HomeComponent implements OnInit, DoCheck {
+export class HomeComponent implements OnInit {
 
   public idTable: number = 0;
   private editedRowIndex: number;
@@ -49,10 +49,6 @@ export class HomeComponent implements OnInit, DoCheck {
     });
   }
 
-  ngDoCheck(): void {
-    console.log('form: ', this.form);
-  }
-
   /**
    * Get structure table
    */
@@ -70,7 +66,6 @@ export class HomeComponent implements OnInit, DoCheck {
 
       this.form = await customFormFactory(this.structureTable);
       await this.getDataTableForId();
-      console.log('Formulario mi rey: ', this.form, this.structureTable);
       this.showError = false;
 
     } else {
@@ -98,7 +93,11 @@ export class HomeComponent implements OnInit, DoCheck {
 
   }
 
-  public async addHandler({ sender }: any): Promise<void> {
+  /**
+   * Add register
+   * @param param0
+   */
+  public async addRegister({ sender }: any): Promise<void> {
     this.createRegister = true;
 
     this.closeEditor(sender);
@@ -107,7 +106,11 @@ export class HomeComponent implements OnInit, DoCheck {
     sender.addRow(this.form);
   }
 
-  public async editHandler({ sender, rowIndex, dataItem }: any): Promise<void> {
+  /**
+   * Edit register
+   * @param param0
+   */
+  public async editRegister({ sender, rowIndex, dataItem }: any): Promise<void> {
     this.createRegister = false;
     this.closeEditor(sender);
     this.form = await customFormFactory(this.structureTable, dataItem);
@@ -117,14 +120,20 @@ export class HomeComponent implements OnInit, DoCheck {
     sender.editRow(rowIndex, this.form); //this.formGroup
   }
 
-  public cancelHandler({ sender, rowIndex }: any) {
-    console.log('cancelHandler');
-
+  /**
+   * Cancel action
+   * @param param0
+   */
+  public cancelAction({ sender, rowIndex }: any) {
     this.closeEditor(sender, rowIndex);
   }
 
-  public async saveHandler({ sender, rowIndex, formGroup, isNew }: any): Promise<void> {
-    console.log(formGroup);
+  /**
+   * Save register in database
+   * @param param0
+   * @returns
+   */
+  public async saveRegister({ sender, rowIndex, formGroup, isNew }: any): Promise<void> {
 
     if (formGroup.invalid) {
       this.notificationService.show({

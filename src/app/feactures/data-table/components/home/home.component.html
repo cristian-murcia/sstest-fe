@@ -5,8 +5,8 @@
 
   <!--Table-->
   <div class="w-100 h-auto">
-    <kendo-grid [data]="rows" (edit)="editHandler($event)" (cancel)="cancelHandler($event)" (save)="saveHandler($event)"
-      (remove)="removeRegister($event)" (add)="addHandler($event)" [height]="400">
+    <kendo-grid [data]="rows" (edit)="editRegister($event)" (cancel)="cancelAction($event)"
+      (save)="saveRegister($event)" (remove)="removeRegister($event)" (add)="addRegister($event)" [height]="400">
 
       <!--Button Add-->
       <ng-template kendoGridToolbarTemplate>
@@ -51,7 +51,7 @@
         </ng-template>
       </kendo-grid-command-column>
 
-      </kendo-grid>
+    </kendo-grid>
   </div>
 </ng-container>
 
