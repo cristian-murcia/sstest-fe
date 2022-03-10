@@ -1,116 +1,83 @@
 <ng-container *ngIf="!showError">
   <div class="w-100 d-flex mb-3">
     <h3>Datos</h3>
-
   </div>
 
+  <!--Table-->
   <div class="w-100 h-auto">
     <kendo-grid [data]="rows" (edit)="editHandler($event)" (cancel)="cancelHandler($event)" (save)="saveHandler($event)"
       (remove)="removeRegister($event)" (add)="addHandler($event)" [height]="400">
 
       <!--Button Add-->
       <ng-template kendoGridToolbarTemplate>
-        <button kendoGridAddCommand>Add new</button>
+        <button kendoGridAddCommand>Agregar nuevo</button>
       </ng-template>
 
       <!--Columns-->
-      <ng-container *ngFor="let column of structureTable">
-        <kendo-grid-column [field]="column.header" [title]="column.header" [width]="200">
-          <ng-template kendoGridEditTemplate let-column="column" let-formGroup="form" let-isNew="isNew">
+      <ng-container *ngFor="let column of structureTable; let i = index">
 
-            <!--Switch DataType-->
-            <div [ngSwitch]="column.dataType">
-
-              <div *ngSwitchCase="'Int'">
-                <ng-template kendoGridEditTemplate let-column="column" let-formGroup="form" let-isNew="isNew">
-                  <!--<kendo-numerictextbox #ntb="popupAnchor" popupAnchor [formControl]="form.get(column.field)">
-                  </kendo-numerictextbox>
-                  <kendo-popup [anchor]="ntb.element"
-                    *ngIf="form.get(column.field)?.invalid && !(isNew && form.get(column.field)?.untouched)"
-                    popupClass="k-widget k-tooltip k-tooltip-validation k-invalid-msg">
-                    <span class="k-icon k-i-warning"></span>
-                    UnitsInStock must be >= 0
-                  </kendo-popup> -->
-                </ng-template>
-              </div>
-
-
-              <div *ngSwitchCase="'Date'">
-                <kendo-datepicker [formControl]="form.get(column.field)"></kendo-datepicker>
-              </div>
-
-
-              <div *ngSwitchDefault>
-                <input #input class="k-textbox k-input k-rounded-md" [formControl]="form.get(column.header)">
-              </div>
-            </div>
-
-            <!--<kendo-popup [anchor]="input"
-              *ngIf="formGroup.get(column.field).invalid && !(isNew && formGroup.get(column.field).untouched)"
+        <!--Curioso que no se puede usar [ngSwitch]="column.dataType" para definir las columnas :(-->
+        <ng-container *ngIf="column.dataType == 'String'">
+          <kendo-grid-column [field]="column.header" [title]="column.header" [width]="200">
+            <input #input class="k-textbox k-input k-rounded-md" [formControl]="form?.get(column.header)">
+            <kendo-popup [anchor]="input"
+              *ngIf="form?.get(column.header)?.invalid && form?.get(column.header)?.untouched"
               popupClass="k-widget k-tooltip k-tooltip-validation k-invalid-msg">
               <span class="k-icon k-i-warning"></span>
-              Product name is required
-            </kendo-popup> -->
-          </ng-template>
-        </kendo-grid-column>
+              El valor es requerido
+            </kendo-popup>
+          </kendo-grid-column>
+        </ng-container>
+
+        <ng-container *ngIf="column.dataType == 'Int'">
+          <kendo-grid-column [field]="column.header" [title]="column.header" [width]="80" editor="numeric" format="">
+          </kendo-grid-column>
+        </ng-container>
+
+        <ng-container *ngIf="column.dataType == 'Date'">
+          <kendo-grid-column [field]="column.header" [title]="column.header" [width]="80" editor="date"
+            [format]="column.format ? column.format : ''">
+          </kendo-grid-column>
+        </ng-container>
+
       </ng-container>
-
-
-
-      <!--<kendo-grid-column field="ProductName" title="Name" [width]="200">
-        <ng-template kendoGridEditTemplate let-column="column" let-formGroup="formGroup" let-isNew="isNew">
-          <input #input class="k-textbox k-input k-rounded-md" [formControl]="formGroup.get(column.field)">
-          <kendo-popup [anchor]="input"
-            *ngIf="formGroup.get(column.field).invalid && !(isNew && formGroup.get(column.field).untouched)"
-            popupClass="k-widget k-tooltip k-tooltip-validation k-invalid-msg">
-            <span class="k-icon k-i-warning"></span>
-            Product name is required
-          </kendo-popup>
-        </ng-template>
-      </kendo-grid-column>
-
-      <kendo-grid-column field="CategoryID" title="Category" [width]="150">
-        <ng-template kendoGridCellTemplate let-dataItem>
-          {{category(dataItem.CategoryID)?.CategoryName}}
-        </ng-template>
-        <ng-template kendoGridEditTemplate let-dataItem="dataItem" let-column="column" let-formGroup="formGroup">
-          <kendo-dropdownlist #ddl="popupAnchor" popupAnchor
-            [defaultItem]="{CategoryID: null, CategoryName: 'Test null item'}" [data]="categories"
-            textField="CategoryName" valueField="CategoryID" [valuePrimitive]="true"
-            [formControl]="formGroup.get('CategoryID')">
-          </kendo-dropdownlist>
-        </ng-template>
-      </kendo-grid-column>
-
-      <kendo-grid-column field="UnitPrice" title="Price" format="{0:c}" [width]="80" editor="numeric">
-      </kendo-grid-column>
-
-      <kendo-grid-column field="UnitsInStock" title="In stock" [width]="80">
-        <ng-template kendoGridEditTemplate let-column="column" let-formGroup="formGroup" let-isNew="isNew">
-          <kendo-numerictextbox #ntb="popupAnchor" popupAnchor [formControl]="formGroup.get(column.field)">
-          </kendo-numerictextbox>
-          <kendo-popup [anchor]="ntb.element"
-            *ngIf="formGroup.get(column.field).invalid && !(isNew && formGroup.get(column.field).untouched)"
-            popupClass="k-widget k-tooltip k-tooltip-validation k-invalid-msg">
-            <span class="k-icon k-i-warning"></span>
-            UnitsInStock must be >= 0
-          </kendo-popup>
-        </ng-template>
-      </kendo-grid-column> -->
 
       <kendo-grid-command-column title="command" [width]="220">
         <ng-template kendoGridCellTemplate let-isNew="isNew">
-          <button kendoGridEditCommand [primary]="true">Edit</button>
-          <button kendoGridRemoveCommand>Remove</button>
-          <button kendoGridSaveCommand [disabled]="form.invalid">{{ isNew ? 'Add' : 'Update' }}</button>
-          <button kendoGridCancelCommand>{{ isNew ? 'Discard changes' : 'Cancel' }}</button>
+          <button kendoGridEditCommand [primary]="true">Editar</button>
+          <button kendoGridRemoveCommand>Eliminar</button>
+          <button kendoGridSaveCommand [disabled]="form.invalid">{{ isNew ? 'Agregar' : 'Actualizar' }}</button>
+          <button kendoGridCancelCommand>{{ isNew ? 'Descartar cambios' : 'Cancelar' }}</button>
         </ng-template>
       </kendo-grid-command-column>
 
-    </kendo-grid>
+      </kendo-grid>
   </div>
 </ng-container>
 
+<!--Popup-->
+<kendo-popup class="d-flex justify-content-center" [anchorAlign]="anchorAlign" [popupAlign]="popupAlign"
+  *ngIf="showPopupDelete">
+  <div class="content d-flex row">
+    <h3 class="w-100 text-center">¿Esta seguro de eliminar el registro?</h3>
+
+    <div class="w-100 d-flex row justify-content-center">
+      <img src="assets/img/delete.svg" style="height: 120px;">
+      <p class="w-100 text-center">El registro será eliminado</p>
+    </div>
+
+    <div class="w-100 d-flex justify-content-around align-items-end px-5">
+      <button class="btn btn-info button-heigth" (click)="showPopupDelete = false">
+        Cancelar
+      </button>
+      <button class="btn btn-info button-heigth" (click)="confirmDelete()">
+        Confirmar
+      </button>
+    </div>
+  </div>
+</kendo-popup>
+
+<!--Show error-->
 <ng-container *ngIf="showError">
   <div class="w-100 h-auto d-flex column justify-content-center align-content-center">
     <img src="assets/img/not_found.svg" style="height: 280px;" />

@@ -1,6 +1,9 @@
 import { Component, DoCheck, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Router, ActivatedRoute, Params } from '@angular/router';
+import { FormGroup } from '@angular/forms';
+import { ActivatedRoute, Params } from '@angular/router';
+import { Align } from '@progress/kendo-angular-popup';
+import { NotificationService } from "@progress/kendo-angular-notification";
+
 import { IEsquemaTable } from 'src/app/shell/models/esquema-table';
 import { ShellService } from 'src/app/shell/service/shell.service';
 import { TypeTableEnum } from '../../enum/typeTable-enum';
@@ -8,16 +11,6 @@ import { customFormFactory } from '../../factories/custom-form.factory';
 import { IDataTableOne, IDataTableThree, IDataTableTwo } from '../../models';
 import { DataTableService } from '../../services/data-table.service';
 
-
-//
-
-const createFormGroup = (dataItem: any) => new FormGroup({
-  'ProductID': new FormControl(dataItem.ProductID),
-  'ProductName': new FormControl(dataItem.ProductName, Validators.required),
-  'UnitPrice': new FormControl(dataItem.UnitPrice),
-  'UnitsInStock': new FormControl(dataItem.UnitsInStock, Validators.compose([Validators.required, Validators.pattern('^[0-9]{1,3}')])),
-  'CategoryID': new FormControl(dataItem.CategoryID, Validators.required)
-});
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -26,16 +19,22 @@ const createFormGroup = (dataItem: any) => new FormGroup({
 export class HomeComponent implements OnInit, DoCheck {
 
   public idTable: number = 0;
+  private editedRowIndex: number;
   public showError: boolean = false;
+  public showPopupDelete: boolean = false;
+  public createRegister: boolean = false;
+  public dataItem: any;
   public structureTable: Array<IEsquemaTable> = [];
   public rows: Array<IDataTableOne | IDataTableTwo | IDataTableThree> = [];
+  public anchorAlign: Align = { horizontal: 'center', vertical: 'center' };
+  public popupAlign: Align = { horizontal: 'center', vertical: 'center' };
   public form: FormGroup;
-  private editedRowIndex: number;
 
   constructor(
     private _activatedRoute: ActivatedRoute,
     private _shellService: ShellService,
-    private _dataTableService: DataTableService
+    private _dataTableService: DataTableService,
+    private notificationService: NotificationService
   ) { }
 
   ngOnInit(): void {
@@ -99,34 +98,18 @@ export class HomeComponent implements OnInit, DoCheck {
 
   }
 
-  public async createOrUpdateRegister(): Promise<void> {
-
-  }
-
-
   public async addHandler({ sender }: any): Promise<void> {
-    console.log('addHandler');
+    this.createRegister = true;
 
     this.closeEditor(sender);
-
-    /*this.formGroup = createFormGroup({
-      'ProductName': '',
-      'UnitPrice': 0,
-      'UnitsInStock': '',
-      'CategoryID': 1
-    });*/
-
     this.form = await customFormFactory(this.structureTable);
 
     sender.addRow(this.form);
   }
 
   public async editHandler({ sender, rowIndex, dataItem }: any): Promise<void> {
-    console.log('editHandler');
-
+    this.createRegister = false;
     this.closeEditor(sender);
-
-    //this.formGroup = createFormGroup(dataItem);
     this.form = await customFormFactory(this.structureTable, dataItem);
 
     this.editedRowIndex = rowIndex;
@@ -141,39 +124,70 @@ export class HomeComponent implements OnInit, DoCheck {
   }
 
   public async saveHandler({ sender, rowIndex, formGroup, isNew }: any): Promise<void> {
-    console.log('saveHandler');
+    console.log(formGroup);
+
+    if (formGroup.invalid) {
+      this.notificationService.show({
+        content: "Existen campos obligatorios",
+        animation: { type: "fade", duration: 500 },
+        position: { horizontal: "right", vertical: "top" },
+        type: { style: "warning", icon: true },
+        closable: true,
+        height: 50
+      });
+      return;
+    }
 
     const register = formGroup.value;
-    console.log(1, register);
 
     //Mostrar spinner
-    let result = await this._dataTableService.createRegisterOrUpdate(register, TypeTableEnum.TableOne, false).finally(() => {
+    let result = await this._dataTableService.createRegisterOrUpdate(register, TypeTableEnum.TableOne, this.createRegister).finally(() => {
       //Quitar spinner
     });
 
-    console.log('resultado de guardar: ', result);
-    await this.getDataTableForId();
+    if (result.status == 200) {
+      this.notificationService.show({
+        content: result.message,
+        animation: { type: "fade", duration: 500 },
+        position: { horizontal: "right", vertical: "top" },
+        type: { style: "success", icon: true },
+        closable: true,
+        height: 50
+      });
+      await this.getDataTableForId();
 
-    //this._dataTableService.save(register, isNew);
+    } else {
+      this.notificationService.show({
+        content: result.message,
+        animation: { type: "fade", duration: 500 },
+        position: { horizontal: "right", vertical: "top" },
+        type: { style: "error", icon: true },
+        closable: true,
+        height: 50
+      });
+    }
 
     sender.closeRow(rowIndex);
+  }
+
+  /**
+   * Show popup by delete register
+   * @param param0
+   */
+  public removeRegister({ dataItem }: any): void {
+    this.showPopupDelete = true;
+    this.dataItem = dataItem;
   }
 
   /**
    * Remove register
    * @param param0
    */
-  public async removeRegister({ dataItem }: any): Promise<void> {
-    let idRegisteDelete: number = this._dataTableService.getIdRegister(dataItem, String(this.idTable));
+  public async confirmDelete(): Promise<void> {
+    let idRegisteDelete: number = this._dataTableService.getIdRegister(this.dataItem, String(this.idTable));
     let typeTable: TypeTableEnum = (String(this.idTable) == TypeTableEnum.TableOne)
       ? TypeTableEnum.TableOne : (String(this.idTable) == TypeTableEnum.TableTwo)
         ? TypeTableEnum.TableTwo : TypeTableEnum.TableThree;
-
-    console.log('ELiminar registro ', idRegisteDelete, typeTable);
-
-    return;
-
-    //Mostrar alerta para confirmar borrado --> Todo correcto, terminar
 
     //Mostrar spinner
     let result = await this._dataTableService.deleteRegister(typeTable, idRegisteDelete).finally(() => {
@@ -181,12 +195,27 @@ export class HomeComponent implements OnInit, DoCheck {
     });
 
     if (result.status == 200) {
-      // Mostrar alerta de ok
+      this.notificationService.show({
+        content: "Se ha eliminado el registro con éxito",
+        animation: { type: "fade", duration: 10 },
+        position: { horizontal: "right", vertical: "top" },
+        type: { style: "success", icon: true },
+        closable: true,
+        height: 50
+      });
+      this.showPopupDelete = false;
+      await this.getDataTableForId();
 
     } else {
-      //Mostrar error
+      this.notificationService.show({
+        content: result.message,
+        animation: { type: "fade", duration: 10 },
+        position: { horizontal: "right", vertical: "top" },
+        type: { style: "error", icon: true },
+        closable: true,
+        height: 50
+      });
     }
-
   }
 
   /**
@@ -195,10 +224,7 @@ export class HomeComponent implements OnInit, DoCheck {
    * @param rowIndex
    */
   private closeEditor(grid: any, rowIndex = this.editedRowIndex) {
-    console.log('closeEditor');
     grid.closeRow(rowIndex);
-    this.editedRowIndex = 0;
-    this.form = new FormGroup({});;
   }
 
 

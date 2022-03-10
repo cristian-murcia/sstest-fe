@@ -13,14 +13,16 @@ import { IndicatorsModule } from '@progress/kendo-angular-indicators';
 import { GridModule } from '@progress/kendo-angular-grid';
 import { DropDownListModule } from "@progress/kendo-angular-dropdowns";
 import { PopupModule } from '@progress/kendo-angular-popup';
+import { NotificationModule } from "@progress/kendo-angular-notification";
+import { IntlModule } from '@progress/kendo-angular-intl';
 import '@progress/kendo-angular-intl/locales/de/all';
+import "@progress/kendo-angular-intl/locales/es/all";
 
 import { AppComponent } from './app.component';
 import { ShellModule } from './shell/shell.module';
 import { CoreModule } from './core/core.module';
 import { AppRoutingModule } from './app-routing.module';
 import { HomeModule, DataTableModule } from './feactures';
-import { IntlModule } from '@progress/kendo-angular-intl';
 
 //Location
 registerLocaleData(localDate, 'es-CO');
@@ -35,6 +37,7 @@ registerLocaleData(localDate, 'es-CO');
     FormsModule,
     ReactiveFormsModule,
 
+    NotificationModule,
     GridModule,
     DropDownsModule,
     DropDownListModule,
@@ -56,7 +59,7 @@ registerLocaleData(localDate, 'es-CO');
   providers: [
     {
       provide: LOCALE_ID,
-      useValue: "bg-BG",
+      useValue: "es-ES",
     },
   ],
   bootstrap: [AppComponent],

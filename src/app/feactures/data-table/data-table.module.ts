@@ -7,10 +7,8 @@ import { GridModule } from '@progress/kendo-angular-grid';
 import { DropDownListModule } from '@progress/kendo-angular-dropdowns';
 import { IntlModule } from '@progress/kendo-angular-intl';
 import "@progress/kendo-angular-intl/locales/bg/all";
-
 // Load the required calendar data for the de locale
 import "@progress/kendo-angular-intl/locales/de/calendar";
-
 
 
 @NgModule({
@@ -20,7 +18,7 @@ import "@progress/kendo-angular-intl/locales/de/calendar";
     DataTableRoutingModule,
     GridModule,
     DropDownListModule,
-    IntlModule
+    IntlModule,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA]
 })
