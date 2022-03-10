@@ -117,7 +117,7 @@ export class HomeComponent implements OnInit {
 
     this.editedRowIndex = rowIndex;
 
-    sender.editRow(rowIndex, this.form); //this.formGroup
+    sender.editRow(rowIndex, this.form);
   }
 
   /**
@@ -133,7 +133,7 @@ export class HomeComponent implements OnInit {
    * @param param0
    * @returns
    */
-  public async saveRegister({ sender, rowIndex, formGroup, isNew }: any): Promise<void> {
+  public async saveRegister({ sender, rowIndex, formGroup }: any): Promise<void> {
 
     if (formGroup.invalid) {
       this.notificationService.show({
@@ -148,9 +148,12 @@ export class HomeComponent implements OnInit {
     }
 
     const register = formGroup.value;
+    let typeTable: TypeTableEnum = (String(this.idTable) == TypeTableEnum.TableOne)
+      ? TypeTableEnum.TableOne : (String(this.idTable) == TypeTableEnum.TableTwo)
+        ? TypeTableEnum.TableTwo : TypeTableEnum.TableThree;
 
     //Mostrar spinner
-    let result = await this._dataTableService.createRegisterOrUpdate(register, TypeTableEnum.TableOne, this.createRegister).finally(() => {
+    let result = await this._dataTableService.createRegisterOrUpdate(register, typeTable, this.createRegister).finally(() => {
       //Quitar spinner
     });
 
